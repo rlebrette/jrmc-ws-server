@@ -1,0 +1,11 @@
+{
+    "name": "JRMCServer"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "express": "2.5.11"
+    , "requirejs": ">=1.0.0"
+    , "jade": ">= 0.0.1"
+    , "xml2js": ">= 0.0.1"
+  }
+}
