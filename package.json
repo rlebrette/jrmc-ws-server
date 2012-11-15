@@ -4,8 +4,10 @@
   , "private": true
   , "dependencies": {
       "express": "2.5.11"
-    , "requirejs": ">=1.0.0"
-    , "jade": ">= 0.0.1"
+    , "requirejs": ">=2.0.0"
     , "xml2js": ">= 0.0.1"
+    , "ejs": ">=0.8.0"
+    , "socket.io": ">=0.9.0"
+    , "socket.io-client": ">=0.9.0"
   }
 }
