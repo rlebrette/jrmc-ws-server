@@ -8,7 +8,7 @@ define(['util'], function (util) {
         if (typeof message != 'string') {
             if (util.isArray(message)) {
                 var mesg = '';
-                for (var i=0;i<message.length;i++) {
+                for (var i = 0; i < message.length; i++) {
                     if (typeof message[i] != 'string') {
                         message[i] = JSON.stringify(message[i]);
                     }
@@ -23,5 +23,15 @@ define(['util'], function (util) {
     };
     var noop = function () {
     };
-    return  {std:notify, nolog:noop};
+    var replacer = function (key, value) {
+        if (key == 'info' || key == 'trace') {
+            if (value == "std:logger") {
+                return notify;
+            } else {
+                return noop;
+            }
+        }
+        return value;
+    }
+    return  {std: notify, nolog: noop, replacer: replacer};
 });

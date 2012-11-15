@@ -2,5 +2,9 @@
     "port": 1337,
     "webPort": 8080,
     "jrmcHost": "localhost",
-    "jrmcPort": 52199
+    "jrmcPort": 52199,
+    "logger": {
+        "info": "std:logger",
+        "trace": "std:logger"
+    }
 }

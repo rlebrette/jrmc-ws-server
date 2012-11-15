@@ -181,6 +181,7 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                     });
                 });
                 data.on('error', function (error) {
+                    throw error;
                     self.log.info(error);
                 });
             } else {
