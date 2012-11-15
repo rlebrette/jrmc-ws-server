@@ -102,7 +102,7 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                 });
                 self.app.get('/', function(req, res) {
                 res.render('index', {
-                    message : 'De groeten'
+                    remoteServer : 'rlb-work'
                 });
                 });
                 self.app.listen(8080);
