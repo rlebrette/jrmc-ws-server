@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- This the main module -->
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>JRiver Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/jquery.mobile-1.2.0.css"/>
+    <link rel="stylesheet" href="css/jrmc-webclient.css"/>
+    <script data-main="js/jrmc-webclient" src="js/libs/require.js"></script>
+</head>
+<body>
+<div id="menu">
+    <h3>Menu</h3>
+    <ul>
+        <li><a href="#now-playing" class="contentLink">Now Playing </a></li>
+        <li><a href="#library0" class="contentLink">Library </a></li>
+    </ul>
+</div>
+
+
+<div data-role="page" id="now-playing" data-theme="a">
+    <% header_title='Now Playing'%><% include global-header %>
+    <!-- /header -->
+
+    <div data-role="content">
+        <div class="content-primary">
+            <form>
+                <div class="ui-body ui-body-a">
+                    <div class="cover" id="cover-stage" style="height: 200px; width: 200px; float: left">
+                        <img src="" id="cover"/>
+                    </div>
+                    <div style="width: 75%; float: right">
+                        <input id="track-pos" data-theme="b" contenteditable="false"/>
+
+                        <div data-role="fieldcontain">
+                            <label for="title">Title : </label>
+                            <input id="title" data-theme="c" readonly="true"/>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="album">Album : </label>
+                            <input id="album" data-theme="c" readonly="true"/>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="artist">Artist : </label>
+                            <input id="artist" data-theme="c" readonly="true"/>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="position">Position : </label>
+                            <input id="position" data-theme="c" readonly="true"/>
+                        </div>
+                        <div data-role="fieldcontain">
+                            <input type="range" name="slider-3" id="position-slide" value="0" min="0" max="10000"
+                                   data-theme="a"
+                                   data-track-theme="e" readonly="true"/>
+                        </div>
+                        <a href="#popupMenu" data-rel="popup" data-role="button" data-inline="true">Menu</a>
+                    </div>
+                </div>
+            </form>
+            <div data-role="popup" id="popupMenu" data-theme="a">
+                <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="b">
+                    <li data-role="divider" data-theme="a">Popup API</li>
+                    <li><a href="options.html">Options</a></li>
+                    <li><a href="methods.html">Methods</a></li>
+                    <li><a href="events.html">Events</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- /content -->
+    <div data-role="footer">
+        <div data-role="navbar" data-position="fixed">
+            <ul>
+                <li><a href="#">Previous</a></li>
+                <li><a href="#">Play/Pause</a></li>
+                <li><a href="#">Stop</a></li>
+                <li><a href="#">Next</a></li>
+            </ul>
+        </div>
+        <!-- /navbar -->
+    </div>
+    <!-- /footer -->
+</div>
+<!-- /page -->
+<% for (var iter=0;iter<6;iter++) { %>
+<div data-role="page" id="library<%= iter%>" data-theme="a">
+    <% header_title='Library'%><% include global-header %>
+    <div data-role="content">
+        <div class="content-primary">
+            <ul id="medias<%= iter%>" data-role="listview" data-filter="true">
+            </ul>
+        </div>
+    </div>
+    <!-- /content -->
+    <% include library-footer %>
+</div>
+<% } %>
+
+<!-- /page popup -->
+</body>
+</html>

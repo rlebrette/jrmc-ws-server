@@ -6,8 +6,8 @@
  */
 
 // Module dependencies.
-define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
-    function (webSocketServer, http, xml2js, util, qs, express) {
+define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
+    function (webSocketServer, http, xml2js, util, qs, express, ejs) {
         /**
          * Helper to return the value of an expected property but that can be missing.
          * @param object the owner of the property.
@@ -65,12 +65,15 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
             self.log = configuration.logger;
             self.jrmcServerURL = buildAddress(configuration);
             self.zoneStatus = {};
-            self.invokeJRMC_API({Action:'Authenticate'}, function (response) {
+            self.invokeJRMC_API({Action: 'Authenticate'}, function (response) {
                 self.token = '?token=' + response.Token + '&';
                 configuration.jrmcAuthenticate = '';
                 self.jrmcServerURL = buildAddress(configuration);
+                self.jrmcGetFolderImage = self.jrmcServerURL + 'Browse/Image' + self.token + 'Format=png&ID=';
+                self.jrmcGetFileImage = self.jrmcServerURL + 'File/GetImage' + self.token + 'Format=png&File=';
+                self.jrmcBaseURL = 'http://' + configuration.jrmcHost + ':' + configuration.jrmcPort + "/";
                 // list of currently connected clients (users)
-                self.jrmcWsServer = webSocketServer.listen(configuration.port, {log:false});
+                self.jrmcWsServer = webSocketServer.listen(configuration.port, {log: false});
                 self.jrmcWsServer.sockets.on('connection', function (socket) {
                     self.log.trace('Connection');
                     socket.on('fetchItems', function (params, continuation) {
@@ -81,12 +84,24 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
                     });
                     socket.on('watchZone', function (request, continuation) {
                         socket.join(request.ZoneID);
-                        self.invokeJRMC_API({Action:'Playback/Info', Args:{Zone:request.ZoneId}}, continuation);
+                        self.invokeJRMC_API({Action: 'Playback/Info', Args: {Zone: request.ZoneId}}, continuation);
                     });
                 });
                 self.app = new express.HTTPServer();
-                self.app.use(express.static('./webclient'));
-                self.app.use(self.app.router);
+                self.app.configure(function() {
+                    self.app.use(express.bodyParser());
+                    self.app.use(express.static('./webclient'));
+                    self.app.use(self.app.router);
+                });
+                self.app.set('view engine', 'ejs');
+                self.app.set('view options', {
+                    layout: false
+                });
+                self.app.get('/', function(req, res) {
+                res.render('index', {
+                    message : 'De groeten'
+                });
+                });
                 self.app.listen(8080);
                 self.log.info('JRMC WebSocket Server v1.0 started');
                 self.log.info('Communicating with : ' + self.jrmcServerURL);
@@ -108,11 +123,12 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
         JRMCServer.prototype.fetchItems = function (params, continuation) {
             var self = this;
             var clientRequest = {
-                Action:'Browse/Children',
-                Args:params,
-                Mode:'list',
-                ItemFinalizer:function (item) {
-                    item.ItemType = 'Folder'
+                Action: 'Browse/Children',
+                Args: params,
+                Mode: 'list',
+                ItemFinalizer: function (item) {
+                    item.ItemType = 'Folder';
+                    item.ImageURL = self.jrmcGetFolderImage + item.Key
                 }
             };
             var folderContinuation = function (response, hasItem) {
@@ -121,9 +137,10 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
                 } else {
                     clientRequest.Action = 'Browse/Files';
                     clientRequest.ItemFinalizer = function (item) {
-                        item.ItemType = 'Media'
+                        item.ItemType = 'Media';
+                        item.ImageURL = self.jrmcGetFileImage + item.Key
                     };
-                    self.invokeJRMC_API(clientRequest, continuation)
+                    self.invokeJRMC_API(clientRequest, continuation);
                 }
             }
             process.nextTick(function () {
@@ -205,6 +222,9 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
                                     itemFinalizer(element);
                                 } else {
                                     response[item.$.Name] = item._;
+                                    if (item.$.Name == 'ImageURL') {
+                                        response[item.$.Name] = self.jrmcBaseURL + response[item.$.Name];
+                                    }
                                 }
                             }
                         }
@@ -245,7 +265,7 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
                 for (var zone in rooms) {
                     var zoneId = String(zone).substr(1);
                     if (zoneId != "") {
-                        self.invokeJRMC_API({Action:'Playback/Info', Args:{Zone:zoneId}}, function (response) {
+                        self.invokeJRMC_API({Action: 'Playback/Info', Args: {Zone: zoneId}}, function (response) {
                             var lastStatus = self.zoneStatus[zoneId];
                             self.zoneStatus[zoneId] = response;
                             if (lastStatus != null && lastStatus != undefined) {
@@ -263,5 +283,5 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express'],
         };
 
         // Export JRMCServer class as Server.
-        return {Server:JRMCServer};
+        return {Server: JRMCServer};
     });
