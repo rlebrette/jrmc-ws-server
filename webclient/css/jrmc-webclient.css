@@ -14,18 +14,22 @@ input.ui-slider-input {
     font-size: 20px;
 }*/
 
-#menu {
-    top: 50px;
+.library-footer .np-description {
+    margin-bottom: 5px;
+}
+
+#main-menu {
+    top: 45px;
     left: 0;
     width: 200px;
     height: 100%;
     position: absolute;
     z-index: -1;
     background-color: #000000;
-    /*opacity: 0.7;*/
+    opacity: 0.85;
 }
 
-#menu h3 {
+#main-menu h3 {
     font-family: arial;
     font-size: 12px;
     color: #fff;
@@ -38,35 +42,35 @@ input.ui-slider-input {
     text-shadow: 0 -1px 1px #333;
 }
 
-#menu ul {
+#main-menu ul {
     margin: 0;
     padding: 0;
     width: inherit;
 }
 
-#menu ul li {
+#main-menu ul li {
     list-style-type: none;
     margin: 0;
 }
 
-#menu ul li a:link, #menu ul li a:visited {
+#main-menu ul li a:link, #main-menu ul li a:visited {
     border-bottom: solid #333 1px;
     box-shadow: 0 1px 0 #727272;
     color: #fff;
-    font-size: 14px;
+    font-size: 16px;
     font-family: arial;
     text-decoration: none;
-    width: 165px;
+    width: 185px;
     display: block;
     padding: 10px 0 10px 10px;
     text-shadow: 0 1px 1px #000;
 }
 
-#menu ul li a:hover, #menu ul li a:active {
+#main-menu ul li a:hover, #main-menu ul li a:active {
     background-color: #716f6f;
 }
 
-#menu .active {
+#main-menu .active {
     background-color: #383737;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #1e1d1d), color-stop(21%, #383737));
 }

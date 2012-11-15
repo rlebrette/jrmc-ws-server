@@ -9,7 +9,7 @@ requirejs.config({
     }
 });
 
-require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC, $, _) {
+require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC, $, jqm) {
     var log = function (message) {
         console.log(new Date().toLocaleTimeString() + " - " + message);
     };
@@ -55,7 +55,7 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                 } else {
                     $detail = '';
                     $javascript = 'changeLibraryPage(' + $key + ', ' + (page + 1) + ',\'' + $label + '\')';
-                    $action = '<a href="#">Add</a>';
+                    $action = '<a href="#popupMenu" data-icon="gear" data-rel="popup">Add</a>';
                 }
                 mediaList.append('<li' + $mode +
                     '><a href="#" onclick="' + $javascript + '">' +
@@ -87,15 +87,26 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
 
     $(document).ready(function () {
         var menuShown;
-        var popupMenu = $("#menu");
+        var popupMenu = $("#main-menu");
+        function hidePopupMenu() {
+            popupMenu.css('z-index', -1);
+            menuShown = false;
+        }
+        function showPopupMenu() {
+            popupMenu.css('z-index', 100);
+            menuShown = true;
+        }
+
+        $(".control-play").live('click', jrmc.play());
+        $(".control-stop").live('click', jrmc.stop());
+        $(".control-next").live('click', jrmc.next());
+        $(".control-previous").live('click', jrmc.previous());
 
         $("a.showMenu").click(function () {
             if (menuShown != true) {
-                popupMenu.css('z-index', 10)
-                menuShown = true;
+                showPopupMenu();
             } else {
-                popupMenu.css('z-index', -1)
-                menuShown = false;
+                hidePopupMenu()
             }
         });
 
@@ -107,20 +118,13 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                 $("#menu li").removeClass('active');
                 $(p).addClass('active');
             }
-            popupMenu.css('z-index', -1);
-            menuShown = false;
         });
-        $("popupMenu").popup();
-        /*
-         $('.ui-btn-back').live('tap',function () {
-         history.back();
-         return false;
-         }).live('click', function () {
-         history.back();
-         return false;
-         });
-         */
+        $('.ui-btn-back').live('click', function () {
+            history.back();
+            return false;
+        });
         $(document).bind("pagebeforechange", function (e, data) {
+            hidePopupMenu();
             var destination = $.mobile.path.parseUrl(data.toPage);
             if (destination.hash == '#library0') {
                 fetchMedias(0, 0);

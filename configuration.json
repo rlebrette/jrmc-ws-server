@@ -5,6 +5,6 @@
     "jrmcPort": 52199,
     "logger": {
         "info": "std:logger",
-        "trace": "std:logger"
+        "trace": "std:nolog"
     }
 }

@@ -82,6 +82,9 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                     socket.on('fetch', function (request, continuation) {
                         self.invokeJRMC_API(request, continuation)
                     });
+                    socket.on('execute', function (request) {
+                        self.invokeJRMC_API(request, function(){})
+                    });
                     socket.on('watchZone', function (request, continuation) {
                         socket.join(request.ZoneID);
                         self.invokeJRMC_API({Action: 'Playback/Info', Args: {Zone: request.ZoneId}}, continuation);

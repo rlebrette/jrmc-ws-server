@@ -1,5 +1,5 @@
 /**
- * Logger Functions
+ * Server specific utilities
  */
 
 // Module dependencies.

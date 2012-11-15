@@ -6,16 +6,17 @@
 
     <title>JRiver Player</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/jquery.mobile-1.2.0.css"/>
+    <link rel="stylesheet" href="css/jquery.mobile-1.2.0.min.css"/>
+    <link rel="stylesheet" href="css/jqm-icon-pack-2.1.2-fa.css"/>
     <link rel="stylesheet" href="css/jrmc-webclient.css"/>
     <script data-main="js/jrmc-webclient" src="js/libs/require.js"></script>
 </head>
 <body>
-<div id="menu">
+<div id="main-menu">
     <h3>Menu</h3>
     <ul>
-        <li><a href="#now-playing" class="contentLink">Now Playing </a></li>
-        <li><a href="#library0" class="contentLink">Library </a></li>
+        <li><a href="#now-playing" data-transition="slide" class="contentLink">Now Playing </a></li>
+        <li><a href="#library0" data-transition="slide" class="contentLink">Library </a></li>
     </ul>
 </div>
 
@@ -59,29 +60,11 @@
                     </div>
                 </div>
             </form>
-            <div data-role="popup" id="popupMenu" data-theme="a">
-                <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="b">
-                    <li data-role="divider" data-theme="a">Popup API</li>
-                    <li><a href="options.html">Options</a></li>
-                    <li><a href="methods.html">Methods</a></li>
-                    <li><a href="events.html">Events</a></li>
-                </ul>
-            </div>
         </div>
-
+        <% include media-popup %>
     </div>
     <!-- /content -->
-    <div data-role="footer">
-        <div data-role="navbar" data-position="fixed">
-            <ul>
-                <li><a href="#">Previous</a></li>
-                <li><a href="#">Play/Pause</a></li>
-                <li><a href="#">Stop</a></li>
-                <li><a href="#">Next</a></li>
-            </ul>
-        </div>
-        <!-- /navbar -->
-    </div>
+    <% include nowplaying-footer %>
     <!-- /footer -->
 </div>
 <!-- /page -->
@@ -93,6 +76,7 @@
             <ul id="medias<%= iter%>" data-role="listview" data-filter="true">
             </ul>
         </div>
+        <% include media-popup %>
     </div>
     <!-- /content -->
     <% include library-footer %>

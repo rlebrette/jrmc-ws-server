@@ -4,7 +4,6 @@ define(['socket.io'], function (websocket) {
         this.logger = logger;
         this.serverAddress = serverAddress;
         this.context = {};
-        this.context.CurrentSongTitle = null;
         this.evtCallback = function () {
         };
         // the real connection is delayed until all the configuration is done.
@@ -12,7 +11,7 @@ define(['socket.io'], function (websocket) {
     };
     JRMCClient.prototype.connect = function () {
         var self = this;
-        self.wsClient = websocket.connect(self.serverAddress, {'connect timeout': 3000});
+        self.wsClient = websocket.connect(self.serverAddress, {'connect timeout': 3000, log:true});
         // register associated handlers
         self.wsClient.on('connect', function () {
             self.logger('WebSocket client connected');
@@ -65,8 +64,32 @@ define(['socket.io'], function (websocket) {
     JRMCClient.prototype.fetch = function (action, args, cb) {
         this.wsClient.emit('fetch', {Action: action, Args: args}, cb);
     };
-    JRMCClient.prototype.invoke = function (action, cb) {
-        this.wsClient.emit('fetch', {Action: action, Args: nil}, cb);
+    JRMCClient.prototype.invoke = function (action) {
+        this.wsClient.emit('execute', {Action: action});
+    };
+    JRMCClient.prototype.play = function () {
+        var self = this;
+        return function () {
+            self.invoke("Playback/PlayPause");
+        }
+    };
+    JRMCClient.prototype.stop = function () {
+        var self = this;
+        return function () {
+            self.invoke("Playback/Stop");
+        }
+    };
+    JRMCClient.prototype.next = function () {
+        var self = this;
+        return function () {
+            self.invoke("Playback/Next");
+        }
+    };
+    JRMCClient.prototype.previous = function () {
+        var self = this;
+        return function () {
+            self.invoke("Playback/Previous");
+        }
     };
     JRMCClient.prototype.fetchItems = function (itemId, cb) {
         this.wsClient.emit('fetchItems', {ID: itemId}, cb);
