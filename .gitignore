@@ -1,0 +1,4 @@
+# Ignore node modules
+/node_modules/*
+# Ignore Jetbrains IDEA workspace
+/.idea/workspace.xml
