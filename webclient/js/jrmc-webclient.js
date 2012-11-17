@@ -1,6 +1,3 @@
-//var host = '192.168.1.100';
-var host = 'rlb-work';
-
 requirejs.config({
     //By default load any module IDs from js/lib
     baseUrl: 'js/libs',
@@ -9,11 +6,11 @@ requirejs.config({
     }
 });
 
-require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC, $, jqm) {
+require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC, $) {
     var log = function (message) {
         console.log(new Date().toLocaleTimeString() + " - " + message);
     };
-    var jrmc = new JRMC.Client("client", 'ws://' + host + ':1337/', log);
+    var jrmc = new JRMC.Client("client", 'ws://'+remoteServer+'/', log);
 
     changeLibraryPage = function (key, page, name) {
         var newPage = '#library' + page;
@@ -78,6 +75,13 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
 
         $('.np-description').text(zoneInfo.Name + ' in "' + zoneInfo.Album + '" by ' + zoneInfo.Artist);
         $('.np-position').text(zoneInfo.PositionDisplay);
+        if (zoneInfo.Status == 'Playing') {
+            $(".control-play").data('icon', 'pause');
+            $(".control-play .ui-icon").addClass("ui-icon-pause").removeClass("ui-icon-play");
+        } else {
+            $(".control-play").data('icon', 'play');
+            $(".control-play .ui-icon").addClass("ui-icon-play").removeClass("ui-icon-pause");
+        }
         if (zoneInfo.MediaHasChanged) {
             var imageURL = zoneInfo.ImageURL;
             $('#cover').attr('src', imageURL);
@@ -133,13 +137,3 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
         jrmc.watchZone(-1, updateNowPlaying);
     });
 });
-
-/*
- jrmc.fetch('Playback/Zones', null, function (data) {
- log("ZONES");
- log(JSON.stringify(data));
- });
- setTimeout(function () {
- fetchMedias(0);
- }, 2000);
- */

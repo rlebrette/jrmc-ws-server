@@ -26,6 +26,12 @@
     <option name="snCheckCPP" value="true" />
     <option name="snCheckC" value="true" />
   </component>
+  <component name="EclipseCodeFormatter">
+    <option name="defaultSettings" value="true" />
+    <option name="formatter" value="ECLIPSE" />
+    <option name="id" value="1335179290647" />
+    <option name="name" value="default (1)" />
+  </component>
   <component name="FindBugsConfigurable">
     <option name="make" value="true" />
     <option name="effort" value="default" />

@@ -11,7 +11,7 @@ define(['socket.io'], function (websocket) {
     };
     JRMCClient.prototype.connect = function () {
         var self = this;
-        self.wsClient = websocket.connect(self.serverAddress, {'connect timeout': 3000, log:true});
+        self.wsClient = websocket.connect(self.serverAddress, {'connect timeout': 3000, log: true});
         // register associated handlers
         self.wsClient.on('connect', function () {
             self.logger('WebSocket client connected');
@@ -46,7 +46,9 @@ define(['socket.io'], function (websocket) {
         } else {
             zoneInfo = self.context['zoneInfo'];
             for (var property in zoneInfoDiff) {
-                zoneInfo[property] = zoneInfoDiff[property];
+                if (zoneInfoDiff.hasOwnProperty(property)) {
+                    zoneInfo[property] = zoneInfoDiff[property];
+                }
             }
         }
         if (zoneInfoDiff.hasOwnProperty('DurationMS')) {

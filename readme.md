@@ -19,7 +19,7 @@ Edit the configuration.json and update the configuration:
 
 ```js
 {
-    "port": 1337,
+    "wsPort": 1337,
     "webPort": 8080,
     "jrmcHost": "localhost",
     "jrmcPort": 52199,
