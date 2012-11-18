@@ -38,6 +38,21 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
             self.log.info('Listen Websocket on : ' + self.conf.wsPort + ' Listen web client on : ' + self.conf.webPort);
         };
         /**
+         * Manage request that ask for browsing the playlist.
+         * @param continuation the continuation provided by the caller.
+         */
+        JRMCServer.prototype.fetchPlaylist = function (continuation) {
+            var self = this;
+            var clientRequest = {
+                Action: 'Playback/Playlist',
+                Mode: 'list',
+                ItemFinalizer: function (item) {
+                    item.ItemType = 'Media';
+                    item.ImageURL = self.jrmcGetFileImage + item.Key
+                }};
+            self.invokeJRMC_API(clientRequest, continuation);
+        };
+        /**
          * Manage request that ask for browsing the media tree.
          * @param params
          * @param continuation the continuation provided by the caller.
@@ -256,6 +271,9 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                 self.log.trace('Connection');
                 socket.on('fetchItems', function (params, continuation) {
                     self.fetchItems(params, continuation)
+                });
+                socket.on('fetchPlaylist', function (continuation) {
+                    self.fetchPlaylist(continuation)
                 });
                 socket.on('fetch', function (request, continuation) {
                     self.invokeJRMC_API(request, continuation)

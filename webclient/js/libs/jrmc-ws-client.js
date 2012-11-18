@@ -96,6 +96,9 @@ define(['socket.io'], function (websocket) {
     JRMCClient.prototype.fetchItems = function (itemId, cb) {
         this.wsClient.emit('fetchItems', {ID: itemId}, cb);
     };
+    JRMCClient.prototype.fetchPlaylist = function (cb) {
+        this.wsClient.emit('fetchPlaylist', cb);
+    };
     JRMCClient.prototype.watchZone = function (zoneId, cb) {
         var self = this;
         this.evtCallback = cb;

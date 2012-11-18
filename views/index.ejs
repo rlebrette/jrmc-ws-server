@@ -14,12 +14,13 @@
     </script>
     <script data-main="js/jrmc-webclient" src="js/libs/require.js"></script>
 </head>
-<body  scroll="no" style="width: 100%; height: 100%; overflow: hidden">
+<body  style="width: 100%; height: 100%; overflow: hidden">
 <div id="main-menu">
     <h3>Menu</h3>
     <ul>
-        <li><a href="#now-playing" data-transition="slide" class="contentLink">Now Playing </a></li>
-        <li><a href="#library0" data-transition="slide" class="contentLink">Library </a></li>
+        <li><a href="#now-playing" data-transition="slide" class="contentLink">Now Playing</a></li>
+        <li><a href="#library0" data-transition="slide" class="contentLink">Library</a></li>
+        <li><a href="#playlist" data-transition="slide" class="contentLink">Playlist</a></li>
     </ul>
 </div>
 
@@ -85,6 +86,20 @@
     <% include library-footer %>
 </div>
 <% } %>
+
+<div data-role="page" id="playlist" data-theme="a">
+    <% header_title='Playlist'%><% include global-header %>
+    <div data-role="content">
+        <div class="content-primary">
+            <ul id="playlist-medias" data-role="listview" data-filter="true">
+            </ul>
+        </div>
+        <% include media-popup %>
+    </div>
+    <!-- /content -->
+    <% include library-footer %>
+</div>
+
 
 <!-- /page popup -->
 </body>
