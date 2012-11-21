@@ -52,6 +52,41 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                 }};
             self.invokeJRMC_API(clientRequest, continuation);
         };
+        JRMCServer.prototype.media = function (action, item) {
+            var clientRequest, args;
+            var self = this;
+            if (item.folder) {
+                args = {ID: item.folder, Action:'Play'};
+                switch (action) {
+                    case 'play-next':
+                        args.PlayMode = 'NextToPlay';
+                        break;
+                    case 'play-after':
+                        args.PlayMode = 'Add';
+                        break;
+                }
+                clientRequest = {
+                    Action: 'Browse/Files',
+                    Args: args
+                };
+            } else {
+                args = {Key: item.file};
+                switch (action) {
+                    case 'play-next':
+                        args.Location = 'Next';
+                        break;
+                    case 'play-after':
+                        args.Location = 'End';
+                        break;
+                }
+                clientRequest = {
+                    Action: 'Playback/PlayByKey',
+                    Args: args
+                };
+            }
+            self.invokeJRMC_API(clientRequest, NOOP);
+
+        };
         /**
          * Manage request that ask for browsing the media tree.
          * @param params
@@ -171,16 +206,18 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                     response._ActionStatus = 'OK';
                     items = data.MPL.Item;
                     response.Items = [];
-                    for (i = 0; i < items.length; i++) {
-                        hasItems = true;
-                        var fields = items[i].Field;
-                        var tuple = {};
-                        for (var j = 0; j < fields.length; j++) {
-                            var field = fields[j];
-                            tuple[field.$.Name] = field._;
+                    if (items != undefined) {
+                        for (i = 0; i < items.length; i++) {
+                            hasItems = true;
+                            var fields = items[i].Field;
+                            var tuple = {};
+                            for (var j = 0; j < fields.length; j++) {
+                                var field = fields[j];
+                                tuple[field.$.Name] = field._;
+                            }
+                            itemFinalizer(tuple);
+                            response.Items.push(tuple);
                         }
-                        itemFinalizer(tuple);
-                        response.Items.push(tuple);
                     }
                 }
                 clientRequest.response = response;
@@ -269,6 +306,9 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
             self.jrmcWsServer = wss.listen(self.conf.wsPort, {log: false});
             self.jrmcWsServer.sockets.on('connection', function (socket) {
                 self.log.trace('Connection');
+                socket.on('media', function (params) {
+                    self.media(params.Action, params.Item)
+                });
                 socket.on('fetchItems', function (params, continuation) {
                     self.fetchItems(params, continuation)
                 });

@@ -14,7 +14,7 @@
     </script>
     <script data-main="js/jrmc-webclient" src="js/libs/require.js"></script>
 </head>
-<body  style="width: 100%; height: 100%; overflow: hidden">
+<body  style="width: 100%; height: 100%;">
 <div id="main-menu">
     <h3>Menu</h3>
     <ul>
@@ -60,12 +60,10 @@
                                    data-theme="a"
                                    data-track-theme="e" readonly="true"/>
                         </div>
-                        <a href="#popupMenu" data-rel="popup" data-role="button" data-inline="true">Menu</a>
                     </div>
                 </div>
             </form>
         </div>
-        <% include media-popup %>
     </div>
     <!-- /content -->
     <% include nowplaying-footer %>
@@ -80,7 +78,7 @@
             <ul id="medias<%= iter%>" data-role="listview" data-filter="true">
             </ul>
         </div>
-        <% include media-popup %>
+        <% popup_id=iter %><% include media-popup %>
     </div>
     <!-- /content -->
     <% include library-footer %>

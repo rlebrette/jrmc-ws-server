@@ -66,8 +66,8 @@ define(['socket.io'], function (websocket) {
     JRMCClient.prototype.fetch = function (action, args, cb) {
         this.wsClient.emit('fetch', {Action: action, Args: args}, cb);
     };
-    JRMCClient.prototype.invoke = function (action) {
-        this.wsClient.emit('execute', {Action: action});
+    JRMCClient.prototype.invoke = function (action, args) {
+        this.wsClient.emit('execute', {Action: action, Args: args});
     };
     JRMCClient.prototype.play = function () {
         var self = this;
@@ -93,11 +93,20 @@ define(['socket.io'], function (websocket) {
             self.invoke("Playback/Previous");
         }
     };
+    JRMCClient.prototype.media = function (action, item) {
+        this.wsClient.emit('media', {Action: action, Item: item});
+    };
     JRMCClient.prototype.fetchItems = function (itemId, cb) {
-        this.wsClient.emit('fetchItems', {ID: itemId}, cb);
+        this.wsClient.emit('fetchItems', {ID: itemId}, function (response) {
+            var items = response.Items;
+            cb(items);
+        });
     };
     JRMCClient.prototype.fetchPlaylist = function (cb) {
-        this.wsClient.emit('fetchPlaylist', cb);
+        this.wsClient.emit('fetchPlaylist', function (response) {
+            var items = response.Items;
+            cb(items);
+        });
     };
     JRMCClient.prototype.watchZone = function (zoneId, cb) {
         var self = this;
