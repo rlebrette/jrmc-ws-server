@@ -4,6 +4,7 @@ input.ui-slider-input {
 
 .ui-field-contain div.ui-slider {
     width: 95%;
+    display: inline-block;
 }
 
 /*.content-primary {
@@ -23,7 +24,7 @@ input.ui-slider-input {
     left: 0;
     width: 200px;
     height: 100%;
-    position: absolute;
+    position: fixed;
     z-index: -1;
     background-color: #000000;
     opacity: 0.85;
@@ -95,4 +96,8 @@ div#cover-stage{
     width: 200px;
     height: 200px;
     -webkit-box-reflect: below 15px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.7, transparent), to(#ff0000));
+}
+
+.control-volume {
+    width: 200px;
 }

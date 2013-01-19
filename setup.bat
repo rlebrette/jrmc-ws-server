@@ -1,0 +1,1 @@
+call "%ProgramW6432\nodejs\npm.cmd" update

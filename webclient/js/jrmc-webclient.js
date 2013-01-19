@@ -7,6 +7,7 @@ requirejs.config({
 });
 
 require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC, $) {
+    const s_medium = '&Width=80&Height=80';
     var context = {};
     var log = function (message) {
         console.log(new Date().toLocaleTimeString() + " - " + message);
@@ -63,6 +64,9 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
         return eDuration;
     };
 
+    getImg = function (url, size) {
+        return '"' + url + size + '"'
+    }
     refreshPlaylist = function () {
         if (context.currentPageId == '#playlist' && context.currentPlayList) {
             var items = context.currentPlayList;
@@ -87,7 +91,7 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                     $detail = '<p> in "' + item.Album + '" by ' + item.Artist + '</p><p class="ui-li-aside"><strong>' + duration + '</strong></p>'
                     content = '<li' + $mode +
                         '><a href="#" onclick="' + $javascript + '">' +
-                        '<img src="' + item.ImageURL + '" style="width: 100px"/>' +
+                        '<img src=' + getImg(item.ImageURL, s_medium) + ' style="width: 100px"/>' +
                         '<h3>' + $label + '</h3>' + $detail + '</a>' + $action + '</li>'
                     if (!isCurrentPlayingNow) item.cachedHTML = content;
                 } else {
@@ -130,7 +134,7 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                     $secondaryLink = '<a href="#" data-icon="gear" data-rel="popup" onclick="' + $secondaryAction + '">Add</a>';
                 }
                 mediaList.append('<li' + $mode + '><a href="#" onclick="' + $primaryAction + '">' +
-                    '<img src="' + item.ImageURL + '" style="width: 100px"/>' +
+                    '<img src=' + getImg(item.ImageURL, s_medium) + ' style="width: 100px"/>' +
                     '<h3>' + $label + '</h3>' + $detail + '</a>' + $secondaryLink + '</li>');
             }
             mediaList.listview("refresh");
@@ -150,10 +154,6 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
             refreshPlaylist();
         }
         //log(JSON.stringify(zoneInfo));
-        $('#position').val(zoneInfo.PositionDisplay);
-        $('#position-slide').val(zoneInfo.RelativePosition);
-        $('#position-slide').slider('refresh');
-
         $('.np-description').text(zoneInfo.Name + ' in "' + zoneInfo.Album + '" by ' + zoneInfo.Artist);
         $('.np-position').text(zoneInfo.PositionDisplay);
         if (zoneInfo.Status == 'Playing') {
@@ -161,9 +161,18 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
         } else {
             changePlayIcon('play');
         }
-        //log($('#playlist-medias li')[zoneInfo.PlayingNowPosition]);
+        $('#position').val(zoneInfo.PositionDisplay);
+        $('#position-slide').val(zoneInfo.RelativePosition);
+        $('#position-slide').slider('refresh');
+        if (context.currentPageId) {
+            var volumeControl = $(context.currentPageId).find('.control-volume');
+            volumeControl.val(zoneInfo.Volume * 100);
+            volumeControl.slider('refresh')
+        }
     };
 
+
+//    $('.ui-page').live('pageinit', function (event, data) {
     $(document).ready(function () {
         var menuShown;
         var popupMenu = $("#main-menu");
@@ -208,6 +217,9 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
         $(document).bind("pagebeforechange", function (e, data) {
             hideMainMenu();
             var destination = ($.mobile.path.parseUrl(data.toPage)).hash;
+            $('.control-volume').bind('change', function (event, ui) {
+                log($(event.currentTarget).val())
+            });
             if (destination != undefined) context.currentPageId = destination;
             if (destination == '#library0') {
                 fetchMedias(0, 0);
@@ -216,6 +228,8 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                 fetchPlaylist();
             }
         });
+
         jrmc.watchZone(-1, updateNowPlaying);
     });
+
 });
