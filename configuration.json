@@ -1,8 +1,8 @@
 {
     "wsPort": 1337,
     "webPort": 8080,
-    "webHost": "rlb-work",
-    "jrmcHost": "rlb-work",
+    "webHost": "192.168.1.226",
+    "jrmcHost": "192.168.1.226",
     "jrmcPort": 52199,
     "logger": {
         "info": "std:logger",

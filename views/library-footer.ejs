@@ -5,26 +5,29 @@
     <div>
         <h3 class="np-description">Now Playing</h3>
 
-        <div data-role="controlgroup" data-type="horizontal">
-            <a class="control-previous" data-icon="step-backward" data-role="button" href="#">Prev.</a>
-            <a class="control-play" data-icon="play" data-role="button" href="#">Play/Pause</a>
-            <a class="control-stop" data-icon="stop" data-role="button" href="#">Stop</a>
-            <a class="control-next" data-icon="step-forward" data-role="button" href="#">Next</a>
-
-            <div>
-                <a class="control-mute" data-icon="volume-up" data-role="button" href="#"></a>
-                <input style="width: 500px;vertical-align: middle" class="control-volume" type="range" name="slider-mini"
-                       id="slider-mini" value="25" min="0" max="100"
-                       data-highlight="true" data-mini="true"/>
+        <div data-role="controlgroup">
+            <div data-role="controlgroup" data-type="horizontal">
+                <a class="control-previous" data-icon="step-backward" data-role="button" href="#">Prev.</a>
+                <a class="control-play" data-icon="play" data-role="button" href="#">Play/Pause</a>
+                <a class="control-stop" data-icon="stop" data-role="button" href="#">Stop</a>
+                <a class="control-next" data-icon="step-forward" data-role="button" href="#">Next</a>
             </div>
-        </div>
-        <div data-role="controlgroup" data-type="horizontal" style="width: 500px">
+            <div data-role="controlgroup" data-type="horizontal">
+                <a class="control-mute" data-icon="volume-up" data-role="button" href="#">&nbsp;</a>
+
+                <div style="width: 400px;vertical-align: middle">
+                    <input class="control-volume" type="range" data-inline="false"
+                           name="slider-mini"
+                           id="slider-mini" value="25" min="0" max="100"
+                           data-highlight="true" data-mini="true"/>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal">
         <h3 class="np-position">Position</h3>
 
-        <h3>&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+        <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
     </div>
 </div>
