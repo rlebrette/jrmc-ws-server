@@ -69,6 +69,10 @@ define(['socket.io'], function (websocket) {
     JRMCClient.prototype.invoke = function (action, args) {
         this.wsClient.emit('execute', {Action: action, Args: args});
     };
+    JRMCClient.prototype.setVolume = function (percent) {
+        var self = this;
+        self.invoke("Playback/Volume", {Level: percent/100});
+    };
     JRMCClient.prototype.play = function () {
         var self = this;
         return function () {

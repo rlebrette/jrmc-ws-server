@@ -1,10 +1,20 @@
 input.ui-slider-input {
     display: none !important;
+    width: 0px;
 }
 
 .ui-field-contain div.ui-slider {
     width: 95%;
     display: inline-block;
+}
+
+.volume-block .ui-controlgroup-controls {
+    display: inline;
+}
+
+.volume-block .ui-slider {
+    display: inline-block;
+    width: 400px;
 }
 
 /*.content-primary {

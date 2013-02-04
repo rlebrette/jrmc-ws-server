@@ -217,8 +217,10 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
         $(document).bind("pagebeforechange", function (e, data) {
             hideMainMenu();
             var destination = ($.mobile.path.parseUrl(data.toPage)).hash;
-            $('.control-volume').bind('change', function (event, ui) {
-                log($(event.currentTarget).val())
+            $('.control-volume').bind('slidestop', function (event, ui) {
+                var volume = $(event.currentTarget).val();
+                log(volume)
+                jrmc.setVolume(volume)
             });
             if (destination != undefined) context.currentPageId = destination;
             if (destination == '#library0') {
