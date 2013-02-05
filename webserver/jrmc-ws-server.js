@@ -1,6 +1,6 @@
 /**
- * JRMCWsServer is a websocket server that acts as a service provider for JRiver MC.
- * It allows the clients to access the
+ * JRMCWsServer is a web server and a websocket server that acts as a service provider for JRiver MC.
+ * It allows the clients to access a JRMC server via a simplified API exposed as websocket services.
  *
  * @type {*}
  */

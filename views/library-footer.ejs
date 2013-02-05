@@ -3,6 +3,7 @@
         <img class="np-cover" src="images/cover.png" style="height: 90px; width: 90px"/>
     </div>
     <div>
+        <!-- holder for the cover art -->
         <h3 class="np-description">Now Playing</h3>
 
         <div>
@@ -13,15 +14,16 @@
                 <a class="control-next" data-icon="step-forward" data-role="button" href="#">Next</a>
             </div>
             <div class="volume-block">
-                <div data-role="controlgroup" data-type="horizontal">
-                    <a class="control-mute" data-icon="volume-up" data-role="button" href="#">&nbsp;</a>
-                    <a class="control-vol-less" data-icon="minus" data-role="button" href="#">&nbsp;</a>
-                    <a class="control-vol-more" data-icon="plus" data-role="button" href="#">&nbsp;</a>
-                </div>
-                    <input class="control-volume" type="range" data-inline="true"
-                           name="slider-mini"
-                           id="slider-mini" value="25" min="0" max="100"
-                           data-highlight="true" data-mini="true"/>
+                <a class="control-mute" data-iconpos="right" data-icon="volume-up" data-mini="true" data-inline="true" data-role="button"
+                   href="#">&nbsp;</a>
+                <a class="control-vol-less" data-iconpos="right" data-icon="minus" data-mini="true" data-inline="true" data-role="button"
+                   href="#">&nbsp;</a>
+                <input class="control-volume" type="range" data-inline="true"
+                       name="slider-mini"
+                       id="slider-mini" value="25" min="0" max="100"
+                       data-highlight="true" data-mini="true"/>
+                <a class="control-vol-more" data-iconpos="right" data-icon="plus" data-mini="true" data-inline="true" data-role="button"
+                   href="#">&nbsp;</a>
             </div>
 
         </div>

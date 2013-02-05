@@ -1,8 +1,8 @@
 {
     "wsPort": 1337,
     "webPort": 8080,
-    "webHost": "192.168.1.226",
-    "jrmcHost": "192.168.1.226",
+    "webHost": "auto",
+    "jrmcHost": "auto",
     "jrmcPort": 52199,
     "logger": {
         "info": "std:logger",

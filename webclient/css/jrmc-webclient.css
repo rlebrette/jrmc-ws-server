@@ -1,6 +1,6 @@
+/* hide all slider's input */
 input.ui-slider-input {
     display: none !important;
-    width: 0px;
 }
 
 .ui-field-contain div.ui-slider {
@@ -8,6 +8,7 @@ input.ui-slider-input {
     display: inline-block;
 }
 
+/* ensure that controls and slider are on the same line */
 .volume-block .ui-controlgroup-controls {
     display: inline;
 }
@@ -15,15 +16,13 @@ input.ui-slider-input {
 .volume-block .ui-slider {
     display: inline-block;
     width: 400px;
+    vertical-align: middle;
 }
 
-/*.content-primary {
+/* suppress gap between buttons and volume slider */
+.volume-block .ui-slider-track {
+    margin: 0 5px 0 5px;
 }
-
-.pages h3 {
-    margin: 0;
-    font-size: 20px;
-}*/
 
 .library-footer .np-description {
     margin-bottom: 5px;
