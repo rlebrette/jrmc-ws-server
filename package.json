@@ -1,12 +1,12 @@
 {
   "name":"jrmc-ws-server",
-  "version":"0.0.1",
+  "version":"1.0.0",
   "private":true,
   "dependencies":{
-    "express":"2.5.11",
+    "express":"3.2.6",
     "requirejs":">=2.0.0",
     "xml2js":">= 0.0.1",
-    "ejs":">=0.8.0",
+    "ejs":">=1.0.0",
     "socket.io":">=0.9.0",
     "socket.io-client":">=0.9.0"
   },

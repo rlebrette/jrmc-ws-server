@@ -56,7 +56,7 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
             var clientRequest, args;
             var self = this;
             if (item.folder) {
-                args = {ID: item.folder, Action:'Play'};
+                args = {ID: item.folder, Action: 'Play'};
                 switch (action) {
                     case 'play-next':
                         args.PlayMode = 'NextToPlay';
@@ -131,14 +131,43 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
          * @param continuation the continuation provided by the caller.
          */
         JRMCServer.prototype.callJRMC_API = function (request, continuation) {
+            var args = false;
             var self = this;
             var req = request.Action;
-            if (request.Args != null) req = req + self.token + qs.encode(request.Args);
-            request.URL = self.jrmcServerURL + req;
-            var httpReq = http.get(request.URL, continuation);
-            httpReq.on('error', function () {
+            if (request.Args != null) {
+                args = true;
+                req = req + "?" + qs.encode(request.Args);
+            }
+            var options = {
+                hostname: self.conf.jrmcHost,
+                port: self.conf.jrmcPort,
+                auth: self.conf.jrmcAuthenticate,
+                method: 'GET',
+                headers: {Connection: 'keep-alive'}
+            };
+            if (request.Action == "Authenticate") {
+                options.auth = self.conf.jrmcAuthenticate;
+            } else {
+                req = req + (args ? "&" : "?") + self.token;
+            }
+            options.path = '/MCWS/v1/' + req;
+
+            var httpReq = http.request(options, function (data) {
+//                self.log.info(options.hostname + '/' + req + ':' + data.statusCode);
+                if (data.statusCode == 401) {
+                    self.log.info("Authentication informations are missing or wrong");
+                    authenticateAgain(self);
+                } else {
+                    continuation(data);
+                }
+            });
+            httpReq.on('error', function (e) {
+                self.log.info('Error while communicating with JRMC' + e);
                 authenticateAgain(self)
-            })
+            });
+
+            httpReq.end();
+//            var httpReq = http.get(request.URL, continuation);
         };
         /**
          * The continuation that manages the data returned by the JRMC WS API.
@@ -239,14 +268,15 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
 
         function authenticateAndConnect(self) {
             self.jrmcServerURL = buildAddress(self.conf);
-            self.log.info('Connecting ' + self.jrmcServerURL);
+            self.log.info('Pinging ' + self.jrmcServerURL + ', waiting for response.');
             self.invokeJRMC_API({Action: 'Authenticate'}, function (response) {
+                self.log.info('Authentification done, got token ' + response.Token);
                 self.jrmcIsConnected = true;
-                self.token = '?token=' + response.Token + '&';
+                self.token = 'token=' + response.Token;
                 self.conf.jrmcAuthenticate = '';
                 self.jrmcServerURL = buildAddress(self.conf);
-                self.jrmcGetFolderImage = self.jrmcServerURL + 'Browse/Image' + self.token + 'Format=png&ID=';
-                self.jrmcGetFileImage = self.jrmcServerURL + 'File/GetImage' + self.token + 'Format=png&File=';
+                self.jrmcGetFolderImage = self.jrmcServerURL + 'Browse/Image?Format=png&' + self.token + '&ID=';
+                self.jrmcGetFileImage = self.jrmcServerURL + 'File/GetImage?Format=png&' + self.token + '&File=';
                 self.jrmcBaseURL = 'http://' + self.conf.jrmcHost + ':' + self.conf.jrmcPort + "/";
                 self.log.info('Communicating with : ' + self.jrmcServerURL);
                 startStatusChecker(self);
@@ -267,6 +297,7 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                                 function (response) {
                                     var zId = zoneId;
                                     var lastStatus = self.jrmcZoneStatus[zId];
+                                    response["ImageURL"] = response["ImageURL"] + '&' + self.token;
                                     self.jrmcZoneStatus[zId] = response;
                                     if (lastStatus != null && lastStatus != undefined) {
                                         response = diff(lastStatus, response);
@@ -284,22 +315,25 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
         }
 
         function initializeWebServer(self) {
-            self.app = new express.HTTPServer();
-            self.app.configure(function () {
-                self.app.use(express.bodyParser());
-                self.app.use(express.static('./webclient'));
-                self.app.use(self.app.router);
+            var app = express();
+            self.app = app;
+            app.configure(function () {
+//                app.use(express.logger());
+                app.use(express.compress());
+                app.use(express.bodyParser());
+                app.use(express.static('./webclient'));
+//                self.app.use(self.app.router);
             });
-            self.app.set('view engine', 'ejs');
-            self.app.set('view options', {
+            app.set('view engine', 'ejs');
+            app.set('view options', {
                 layout: false
             });
-            self.app.get('/', function (req, res) {
+            app.get('/', function (req, res) {
                 res.render('index', {
                     remoteServer: self.conf.webHost + ':' + self.conf.wsPort
                 });
             });
-            self.app.listen(self.conf.webPort);
+            app.listen(self.conf.webPort);
         }
 
         function initializeWebSocketServer(self) {
@@ -324,7 +358,10 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
                 });
                 socket.on('watchZone', function (request, continuation) {
                     socket.join(request.ZoneID);
-                    self.invokeJRMC_API({Action: 'Playback/Info', Args: {Zone: request.ZoneId}}, continuation);
+                    self.invokeJRMC_API({Action: 'Playback/Info', Args: {Zone: request.ZoneId}}, function (response) {
+                        response["ImageURL"] = response["ImageURL"] + '&' + self.token;
+                        continuation(response);
+                    });
                 });
             });
         }
@@ -381,7 +418,6 @@ define(['socket.io', 'http', 'xml2js', 'util', 'querystring', 'express', 'ejs'],
 
         function buildAddress(configuration) {
             return 'http://' +
-                (configuration.jrmcAuthenticate != '' ? configuration.jrmcAuthenticate + '@' : '') +
                 configuration.jrmcHost + ':' +
                 configuration.jrmcPort + '/MCWS/v1/';
         }

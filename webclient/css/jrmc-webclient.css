@@ -1,3 +1,6 @@
+#urlTooltip{display:none!important;}
+#btTooltip{display:none!important;}
+
 /* hide all slider's input */
 input.ui-slider-input {
     display: none !important;
@@ -86,7 +89,7 @@ input.ui-slider-input {
 }
 
 div#cover-stage{
-	-webkit-perspective: 600px;
+	-webkit-perspective: 900px;
 	-webkit-perspective-origin: 50% 50%;
 	text-align:center;
 	overflow: visible;
@@ -109,4 +112,9 @@ div#cover-stage{
 
 .control-volume {
     width: 200px;
+}
+
+.logo {
+    display : block;
+    margin : auto;
 }

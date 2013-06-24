@@ -6,13 +6,15 @@ requirejs.config({
     }
 });
 
-require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC, $) {
+require(["jquery", "jquery.mobile.custom.min", "jrmc-ws-client", 'jquery.img.lazy'], function ($, $jqm, JRMC) {
     const s_medium = '&Width=80&Height=80';
+    const s_cover = '&Width=200&Height=200';
     var context = {};
     var log = function (message) {
         console.log(new Date().toLocaleTimeString() + " - " + message);
     };
     var jrmc = new JRMC.Client("client", 'ws://' + remoteServer + '/', log);
+    var volumeChangeIsRunning = false;
 
     media = function (page, action) {
         $('#popupMediaMenu' + page).popup('close');
@@ -66,7 +68,8 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
 
     getImg = function (url, size) {
         return '"' + url + size + '"'
-    }
+    };
+
     refreshPlaylist = function () {
         if (context.currentPageId == '#playlist' && context.currentPlayList) {
             var items = context.currentPlayList;
@@ -91,7 +94,7 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                     $detail = '<p> in "' + item.Album + '" by ' + item.Artist + '</p><p class="ui-li-aside"><strong>' + duration + '</strong></p>'
                     content = '<li' + $mode +
                         '><a href="#" onclick="' + $javascript + '">' +
-                        '<img src=' + getImg(item.ImageURL, s_medium) + ' style="width: 100px"/>' +
+                        '<img class="lazy" data-original=' + getImg(item.ImageURL, s_medium) + ' src="img/grey.gif" style="width: 100px"/>' +
                         '<h3>' + $label + '</h3>' + $detail + '</a>' + $action + '</li>'
                     if (!isCurrentPlayingNow) item.cachedHTML = content;
                 } else {
@@ -100,6 +103,11 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                 mediaList.append(content);
             }
             mediaList.listview("refresh");
+            var elements = mediaList.find("img.lazy");
+            elements.lazyload({
+                effect: "fadeIn"
+            });
+            $.each(elements.slice(0,10), function() {$(this).trigger("appear")});
         }
     };
     fetchPlaylist = function () {
@@ -113,9 +121,10 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
     fetchMedias = function (key, page) {
         $.mobile.showPageLoadingMsg();
         var mediaList = $('#medias' + page);
+        mediaList.empty();
         jrmc.fetchItems(key, function (items) {
             var img;
-            mediaList.empty();
+//            var list = document.createDocumentFragment();
             for (var i = 0; i < items.length; i++) {
                 var item = items[i],
                     $key = item.Key,
@@ -134,19 +143,26 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                     $secondaryLink = '<a href="#" data-icon="gear" data-rel="popup" onclick="' + $secondaryAction + '">Add</a>';
                 }
                 mediaList.append('<li' + $mode + '><a href="#" onclick="' + $primaryAction + '">' +
-                    '<img src=' + getImg(item.ImageURL, s_medium) + ' style="width: 100px"/>' +
+                    '<img class="lazy" data-original=' + getImg(item.ImageURL, s_medium) + ' src="images/grey.gif" style="width: 100px"/>' +
                     '<h3>' + $label + '</h3>' + $detail + '</a>' + $secondaryLink + '</li>');
             }
+//            mediaList.append(list);
             mediaList.listview("refresh");
+            var elements = mediaList.find("img.lazy");
+            elements.lazyload({
+                effect: "fadeIn"
+            });
+            $.each(elements.slice(0,10), function() {$(this).trigger("appear")});
             $.mobile.hidePageLoadingMsg();
         })
     };
+
     var updateNowPlaying = function (zoneInfo) {
         context.nowPlaying = zoneInfo;
         if (zoneInfo.MediaHasChanged) {
             var imageURL = zoneInfo.ImageURL;
-            $('#cover').attr('src', imageURL);
-            $('.np-cover').attr('src', imageURL);
+            $('#cover').attr('src', imageURL + s_cover);
+            $('.np-cover').attr('src', imageURL + s_medium);
             $('#title').val(zoneInfo.Name);
             $('#track-pos').val(zoneInfo.PlayingNowPositionDisplay);
             $('#artist').val(zoneInfo.Artist);
@@ -154,7 +170,7 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
             refreshPlaylist();
         }
         //log(JSON.stringify(zoneInfo));
-        $('.np-description').text(zoneInfo.Name + ' in "' + zoneInfo.Album + '" by ' + zoneInfo.Artist);
+        $('.np-description').text(zoneInfo.Name.substring(0,40) + ' in "' + zoneInfo.Album.substring(0,40) + '" by ' + zoneInfo.Artist.substring(0,50));
         $('.np-position').text(zoneInfo.PositionDisplay);
         if (zoneInfo.Status == 'Playing') {
             changePlayIcon('pause');
@@ -162,17 +178,31 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
             changePlayIcon('play');
         }
         $('#position').val(zoneInfo.PositionDisplay);
-        $('#position-slide').val(zoneInfo.RelativePosition);
-        $('#position-slide').slider('refresh');
-        if (context.currentPageId) {
+        var $positionSlider = $('#position-slide');
+        $positionSlider.val(zoneInfo.RelativePosition);
+        $positionSlider.slider('refresh');
+        if (context.currentPageId && !volumeChangeIsRunning) {
             var volumeControl = $(context.currentPageId).find('.control-volume');
             volumeControl.val(zoneInfo.Volume * 100);
             volumeControl.slider('refresh')
         }
     };
 
+    $(document).on('pageinit', '.ui-page', function (e) {
+        var pid = e.target.id,
+            $log = $('#' + pid + 'log');
+        var $controlVol = $('.control-volume');
+        $controlVol.bind('slidestart', function (event, ui) {
+            volumeChangeIsRunning = true;
+        });
+        $controlVol.bind('slidestop', function (event, ui) {
+            volumeChangeIsRunning = false;
+            var volume = $(event.currentTarget).val();
+            jrmc.setVolume(volume)
+        });
+        jrmc.watchZone(-1, updateNowPlaying);
+    });
 
-//    $('.ui-page').live('pageinit', function (event, data) {
     $(document).ready(function () {
         var menuShown;
         var popupMenu = $("#main-menu");
@@ -201,27 +231,19 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
             }
         });
 
-        $("#menu li a").click(function () {
+        $("#menu").find("li a").click(function () {
             var p = $(this).parent();
             if ($(p).hasClass('active')) {
-                $("#menu li").removeClass('active');
+                $("#menu").find("li").removeClass('active');
             } else {
                 $("#menu li").removeClass('active');
                 $(p).addClass('active');
             }
         });
-        $('.ui-btn-back').live('click', function () {
-            history.back();
-            return false;
-        });
+
         $(document).bind("pagebeforechange", function (e, data) {
             hideMainMenu();
             var destination = ($.mobile.path.parseUrl(data.toPage)).hash;
-            $('.control-volume').bind('slidestop', function (event, ui) {
-                var volume = $(event.currentTarget).val();
-                log(volume)
-                jrmc.setVolume(volume)
-            });
             if (destination != undefined) context.currentPageId = destination;
             if (destination == '#library0') {
                 fetchMedias(0, 0);
@@ -230,8 +252,5 @@ require(["jrmc-ws-client", "jquery", "jquery.mobile.custom.min"], function (JRMC
                 fetchPlaylist();
             }
         });
-
-        jrmc.watchZone(-1, updateNowPlaying);
     });
-
 });

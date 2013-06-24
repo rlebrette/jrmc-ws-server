@@ -21,9 +21,23 @@
         <li><a href="#now-playing" data-transition="slide" class="contentLink">Now Playing</a></li>
         <li><a href="#library0" data-transition="slide" class="contentLink">Library</a></li>
         <li><a href="#playlist" data-transition="slide" class="contentLink">Playlist</a></li>
+        <li><a href="#controls" data-transition="slide" class="contentLink">Controls</a></li>
     </ul>
 </div>
 
+
+<div data-role="page" id="home" data-theme="a">
+    <div data-role="panel" id="mypanel" data-position="left" data-display="overlay">
+        <!-- panel content goes here -->
+    </div>
+    <% header_title='Home'%><% include global-header %>
+    <div data-role="content">
+        <div class="content-primary">
+            <img class="logo" src="images/JMCRemote.png"/>
+        </div>
+    </div>
+    <!-- /content -->
+</div>
 
 <div data-role="page" id="now-playing" data-theme="a">
     <% header_title='Now Playing'%><% include global-header %>
@@ -91,6 +105,42 @@
         <div class="content-primary">
             <ul id="playlist-medias" data-role="listview" data-filter="true">
             </ul>
+        </div>
+        <% include media-popup %>
+    </div>
+    <!-- /content -->
+    <% include library-footer %>
+</div>
+
+<div data-role="page" id="controls" data-theme="a">
+    <% header_title='Controls'%><% include global-header %>
+    <div data-role="content">
+        <div class="content-primary">
+            <form>
+                <div data-role="fieldcontain">
+                    <label for="ampli">Ampli:</label>
+                    <select name="ampli" id="ampli" data-role="slider">
+                        <option value="off">Off</option>
+                        <option value="on">On</option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="projector">Projector:</label>
+                    <select name="projector" id="projector" data-role="slider">
+                        <option value="off">Off</option>
+                        <option value="on">On</option>
+                    </select>
+                </div>
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#" data-icon="grid">Off</a></li>
+                        <li><a href="#" data-icon="star" class="ui-btn-active">Lecture</a></li>
+                        <li><a href="#" data-icon="gear">Musique</a></li>
+                        <li><a href="#" data-icon="gear">Soft</a></li>
+                        <li><a href="#" data-icon="gear">On</a></li>
+                    </ul>
+                </div>
+              </form>
         </div>
         <% include media-popup %>
     </div>

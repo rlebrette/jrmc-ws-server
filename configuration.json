@@ -1,9 +1,10 @@
 {
     "wsPort": 1337,
     "webPort": 8080,
-    "webHost": "auto",
-    "jrmcHost": "auto",
+    "webHost": "127.0.0.1",
+    "jrmcHost": "127.0.0.1",
     "jrmcPort": 52199,
+    "jrmcAuthenticate": "rlebrette:Colargol$",
     "logger": {
         "info": "std:logger",
         "trace": "std:nolog"
