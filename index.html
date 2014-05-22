@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Jrmc-ws-server : node.js" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Jrmc-ws-server</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/rlebrette/jrmc-ws-server">View on GitHub</a>
+
+          <h1 id="project_title">Jrmc-ws-server</h1>
+          <h2 id="project_tagline">node.js</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/rlebrette/jrmc-ws-server/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/rlebrette/jrmc-ws-server/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="jrmc-ws-server-and-remote-client" class="anchor" href="#jrmc-ws-server-and-remote-client"><span class="octicon octicon-link"></span></a>JRMC WS Server and Remote Client</h1>
+
+<p>jrmc-ws-server is a webserver including a websocket API that exposes the JRiver Media Center WS API for web clients.</p>
+
+<p>It comes with a javascript client side library that offers the following features:</p>
+
+<ul>
+<li>all data is formatted as JSON objects,</li>
+<li>the available services are exposed as meaningful functions,</li>
+<li>the functions are asynchrone and provide a callback feature allowing the client to handle the result,</li>
+</ul><p>Finally, this javascript library is used in a JQuery Mobile based web client.</p>
+
+<h1>
+<a name="install-the-server" class="anchor" href="#install-the-server"><span class="octicon octicon-link"></span></a>Install the server</h1>
+
+<p>Everything is built on top of node.js :</p>
+
+<ul>
+<li>first you have to have an existing node.js installation.</li>
+<li>next you have to download additional modules in the project:</li>
+</ul><div class="highlight highlight-bash"><pre><span class="nv">$ </span>npm update
+</pre></div>
+
+<h1>
+<a name="configure-the-server" class="anchor" href="#configure-the-server"><span class="octicon octicon-link"></span></a>Configure the server</h1>
+
+<p>Edit the configuration.json and update the configuration:</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+    <span class="s2">"wsPort"</span><span class="o">:</span> <span class="mi">1337</span><span class="p">,</span>
+    <span class="s2">"webPort"</span><span class="o">:</span> <span class="mi">8080</span><span class="p">,</span>
+    <span class="s2">"webHost"</span><span class="o">:</span> <span class="s2">"localhost"</span><span class="p">,</span>
+    <span class="s2">"jrmcHost"</span><span class="o">:</span> <span class="s2">"localhost"</span><span class="p">,</span>
+    <span class="s2">"jrmcPort"</span><span class="o">:</span> <span class="mi">52199</span><span class="p">,</span>
+    <span class="s2">"jrmcAuthenticate"</span><span class="o">:</span> <span class="s2">"user:password"</span><span class="p">,</span>
+    <span class="s2">"logger"</span><span class="o">:</span><span class="p">{</span>
+        <span class="s2">"info"</span><span class="o">:</span> <span class="s2">"std:logger"</span><span class="p">,</span>
+        <span class="s2">"trace"</span><span class="o">:</span> <span class="s2">"std:logger"</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>wsPort is the websocket port that will be used.
+webPort is the port that will be used to deploy the Remote Client webapp
+webHost is the ip or DNS name of the machine where this installation is running on, it's used by the web client to retrieve this instance.
+jrmcHost is the ip or DNS name of the machine where JRMC is running on, it's recommended that keep the server on the same machine that the one hosting JRMC.
+jrmcPort is the port of the JRMC MCWS services
+jrmAuthenticate is the information that allows this server to connect to JRMC if authentication is activated.</p>
+
+<h1>
+<a name="run-the-server" class="anchor" href="#run-the-server"><span class="octicon octicon-link"></span></a>Run the server</h1>
+
+<div class="highlight highlight-bash"><pre> <span class="nv">$ </span>npm start
+</pre></div>
+
+<h1>
+<a name="exposed-clients-api" class="anchor" href="#exposed-clients-api"><span class="octicon octicon-link"></span></a>Exposed clients API</h1>
+
+<p>Connecting the websocket server from a client is as easy as writing the following code:</p>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">jrmc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JRMC</span><span class="p">.</span><span class="nx">Client</span><span class="p">(</span><span class="s2">"client"</span><span class="p">,</span> <span class="s1">'ws://host:port/'</span><span class="p">);</span>
+</pre></div>
+
+<ul>
+<li><p><em>Watch a given zone</em>, every seconds the given function will be called with the information of that zone.
+jrmc.watchZone(zoneId, function(zoneInfo) {})</p></li>
+<li><p><em>Browse the library</em>, fetch the information for the given key.
+jrmc.fetchItems(key, function(items) {})</p></li>
+<li><p><em>Fetch the current playlist</em>
+jrmc.fetchPlaylist(function(items) {})</p></li>
+</ul><p>jrmc.play()</p>
+
+<p>jrmc.pause()</p>
+
+<p>jrmc.stop()</p>
+
+<p>jrmc.next()</p>
+
+<p>jrmc.previous()</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Jrmc-ws-server maintained by <a href="https://github.com/rlebrette">rlebrette</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
